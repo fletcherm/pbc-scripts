@@ -1,6 +1,6 @@
 # Proxmox Backup Client scripts and setup
 
-My convenience scripts for using `proxmox-backup-client`: https://pbs.proxmox.com/docs/backup-client.html#
+My convenience scripts for using `proxmox-backup-client`: https://pbs.proxmox.com/docs/backup-client.html
 
 ## Backup script installation
 
