@@ -7,10 +7,10 @@ My convenience scripts for using `proxmox-backup-client`: https://pbs.proxmox.co
 * Clone this repository.
 * For convenience, symlink the backup scripts in this directory to wherever you want.
 * Update your `.bashrc`, `.zshrc`, or other login script to ensure the follow environment variables are set for this system:
-  * `PBS_REPOSITORY`
-  * `PBS_NAMESPACE`
   * `PBS_BACKUP_NAME`
   * `PBS_BACKUP_DIR`
+  * `PBS_NAMESPACE`
+  * `PBS_REPOSITORY`
 * Optionally set `PBS_PASSWORD` or a related environment variable to avoid being prompted for the password.
   * Please see this page for more information: https://pbs.proxmox.com/docs/backup-client.html#environment-variables
 
