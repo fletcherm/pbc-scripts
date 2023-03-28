@@ -2,7 +2,7 @@
 
 My convenience scripts for using `proxmox-backup-client`: https://pbs.proxmox.com/docs/backup-client.html
 
-## Backup script installation
+## Installation
 
 * Clone this repository.
 * For convenience, symlink the backup scripts in this directory to wherever you want.
@@ -14,7 +14,7 @@ My convenience scripts for using `proxmox-backup-client`: https://pbs.proxmox.co
 * Optionally set `PBS_PASSWORD` or a related environment variable to avoid being prompted for the password.
   * Please see this page for more information: https://pbs.proxmox.com/docs/backup-client.html#environment-variables
 
-## Script descriptions
+## Descriptions
 
 * `pbs-environment.sh`
   * Sets up the environment for the other scripts and logs in.
@@ -25,4 +25,3 @@ My convenience scripts for using `proxmox-backup-client`: https://pbs.proxmox.co
   * Lists the known backups for the `PBS_BACKUP_NAME` and `PBS_NAMESPACE` specified.
 * `restore-pbs-backup.sh`
   * Restores the specified backup listed by `list-pbs-snapshots.sh`.
-
