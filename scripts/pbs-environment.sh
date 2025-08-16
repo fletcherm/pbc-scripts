@@ -7,7 +7,7 @@ export PBC=proxmox-backup-client
 
 if ! command -v "$PBC" >/dev/null 2>&1; then
   echo "Error: $PBC is not installed or not in PATH." >&2
-  echo "Please install it following Proxmox's instructions: https://pbs.proxmox.com/docs/installation.html#client-installation
+  echo "Please install it following Proxmox's instructions: https://pbs.proxmox.com/docs/installation.html#client-installation"
   exit 1
 fi
 
