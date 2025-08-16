@@ -1,0 +1,7 @@
+# Loads PBS env for proxmox-backup-client / pbc-scripts
+PBC_ENV_FILE="$HOME/.config/pbc-scripts/pbc.env"
+if [[ -r "$PBC_ENV_FILE" ]]; then
+  set -a
+  source "$PBC_ENV_FILE"
+  set +a
+fi

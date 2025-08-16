@@ -1,0 +1,5 @@
+galaxy_info:
+  author: Matt Fletcher
+  description: Install pbc-scripts and provision Proxmox Backup Client environment variables.
+  license: Unlicense
+  min_ansible_version: "2.1"
