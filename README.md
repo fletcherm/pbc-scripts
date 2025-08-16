@@ -1,6 +1,6 @@
 # Proxmox Backup Client scripts and setup
 
-My convenience scripts for using `proxmox-backup-client`: https://pbs.proxmox.com/docs/backup-client.html
+My convenience scripts for using [Proxmox Backup Client](https://pbs.proxmox.com/docs/backup-client.html). 
 
 ## Installation
 
@@ -12,7 +12,7 @@ My convenience scripts for using `proxmox-backup-client`: https://pbs.proxmox.co
   * `PBS_NAMESPACE`
   * `PBS_REPOSITORY`
 * Optionally set `PBS_PASSWORD` or a related environment variable to avoid being prompted for the password.
-  * Please see this page for more information: https://pbs.proxmox.com/docs/backup-client.html#environment-variables
+  * [Please see this page for more information](https://pbs.proxmox.com/docs/backup-client.html#environment-variables).
 
 ## Descriptions
 
