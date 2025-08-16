@@ -16,6 +16,10 @@ My convenience scripts for using [Proxmox Backup Client](https://pbs.proxmox.com
 * Optionally set `PBS_PASSWORD` or a related environment variable to avoid being prompted for the password.
   * [Please see this page for more information](https://pbs.proxmox.com/docs/backup-client.html#environment-variables).
 
+## Ansible role
+
+An Ansible role for installing the Proxmox Backup Client and these helpers scripts is available in this repository. It has some customization, but not a lot, as this repository is primarily for myself. Feel free to use it but your mileage may vary.
+
 ## Descriptions
 
 * `pbs-environment.sh`
