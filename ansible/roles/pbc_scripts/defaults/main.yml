@@ -1,7 +1,6 @@
 ---
 # Install proxmox-backup-client automatically?
 pbc_install_client: true
-
 pbc_client_suite: trixie
 pbc_client_url_base: "http://download.proxmox.com/debian/pbs-client/dists"
 pbc_client_version: "4.0.11-1"
@@ -10,13 +9,13 @@ pbc_client_version: "4.0.11-1"
 pbc_user: fletcher
 pbc_home: "/home/{{ pbc_user }}"
 
+# Git source for the scripts (this repo). Set pbc_version to a git tag.
+pbc_repo: "https://github.com/fletcherm/pbc-scripts.git"
+pbc_version: "main"
+
 # Where scripts land on the host
 pbc_src_dir: "{{ pbc_home }}/git/pbc-scripts"
 pbc_bin_dir: "{{ pbc_home }}/bin"
-
-# Git source for the scripts (this repo). Use a tag for reproducibility.
-pbc_repo: "https://github.com/fletcherm/pbc-scripts.git"
-pbc_version: "main"
 
 # PBS env file location
 pbc_env_dir: "{{ pbc_home }}/.config/pbc-scripts"
