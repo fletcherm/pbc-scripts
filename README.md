@@ -7,7 +7,7 @@ My convenience scripts for using [Proxmox Backup Client](https://pbs.proxmox.com
 * Clone this repository.
 * For convenience, symlink the backup scripts in the `scripts` directory to wherever you want.
   * The included `install.sh` is a crude script will symlink the backup scripts into your `~/bin` directory.
-  * It assumes this repository is at cloned at `~/git/pbs-scripts`.
+  * It assumes this repository is cloned at `~/git/pbs-scripts`.
 * Update your `.bashrc`, `.zshrc`, or other login script to ensure the follow environment variables are set for this system:
   * `PBS_BACKUP_NAME`
   * `PBS_BACKUP_DIR`
@@ -16,11 +16,7 @@ My convenience scripts for using [Proxmox Backup Client](https://pbs.proxmox.com
 * Optionally set `PBS_PASSWORD` or a related environment variable to avoid being prompted for the password.
   * [Please see this page for more information](https://pbs.proxmox.com/docs/backup-client.html#environment-variables).
 
-## Ansible role
-
-An Ansible role for installing the Proxmox Backup Client and these helpers scripts is available in this repository. It has some customization, but not a lot, as this repository is primarily for myself. Feel free to use it but your mileage may vary.
-
-## Descriptions
+## Scripts
 
 * `pbs-environment.sh`
   * Sets up the environment for the other scripts and logs in.
@@ -31,3 +27,7 @@ An Ansible role for installing the Proxmox Backup Client and these helpers scrip
   * Lists the known backups for the `PBS_BACKUP_NAME` and `PBS_NAMESPACE` specified.
 * `restore-pbs-backup.sh`
   * Restores the specified backup listed by `list-pbs-snapshots.sh`.
+
+## Ansible role
+
+An Ansible role for installing the Proxmox Backup Client and these helpers scripts is available in this repository. It has some customization, but not a lot, as this repository is primarily for myself. Feel free to use it but your mileage may vary.

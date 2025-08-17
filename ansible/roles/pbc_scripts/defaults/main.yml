@@ -1,6 +1,6 @@
 ---
 pbc_install_client: true # Install proxmox-backup-client automatically?
-pbc_client_is_arm: false # Set to true to install the ARM version, false for Intel/AMD64
+pbc_client_is_arm: false # Set to true to install the ARM version, false for Intel architecture
 
 pbc_client_suite: trixie
 pbc_client_url_base: "http://download.proxmox.com/debian/pbs-client/dists"
