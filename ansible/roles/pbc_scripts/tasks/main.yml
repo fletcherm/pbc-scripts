@@ -1,49 +1,4 @@
 ---
-# Install proxmox-backup-client
-- name: Pin PBS client packages
-  copy:
-    dest: /etc/apt/preferences.d/pbs-client
-    mode: "0644"
-    content: |
-      Package: proxmox-backup-client
-      Pin: origin "download.proxmox.com"
-      Pin-Priority: 700
-
-      Package: *
-      Pin: origin "download.proxmox.com"
-      Pin-Priority: 100
-
-- name: Install Proxmox archive keyring
-  ansible.builtin.get_url:
-    url: "{{ pbc_keyring_url }}"
-    dest: "{{ pbc_keyring_path }}"
-    mode: "0644"
-  when: pbc_install_client
-
-- name: Configure deb822 source for PBS client
-  ansible.builtin.copy:
-    dest: "{{ pbc_client_apt_sources_file }}"
-    mode: "0644"
-    content: |
-      Types: deb
-      URIs: http://download.proxmox.com/debian/pbs-client
-      Suites: {{ pbc_client_suite }}
-      Components: main
-      Signed-By: {{ pbc_keyring_path }}
-  when: pbc_install_client
-
-- name: apt update
-  ansible.builtin.apt:
-    update_cache: true
-  when: pbc_install_client
-
-- name: Install proxmox-backup-client
-  ansible.builtin.package:
-    name: proxmox-backup-client
-    state: present
-  when: pbc_install_client
-
-# Install pbc wrapper scripts
 - name: Ensure base directories exist
   ansible.builtin.file:
     path: "{{ item }}"
@@ -55,6 +10,46 @@
     - "{{ pbc_bin_dir }}"
     - "{{ pbc_env_dir }}"
 
+# Install proxmox-backup-client
+- name: Set proxmox-backup-client .deb file name
+  set_fact:
+    pbc_client_deb_filename: "proxmox-backup-client-static_{{ pbc_client_version }}_amd64.deb"
+
+- name: Set full proxmox-backup-client .deb download URL
+  set_fact:
+    pbc_client_deb_url: "{{ pbc_client_url_base }}/{{ pbc_client_suite }}/main/binary-amd64/{{ pbc_client_deb_filename }}"
+
+- name: Create temporary directory for PBS client .deb
+  ansible.builtin.tempfile:
+    state: directory
+    suffix: pbc_deb_download
+  register: pbc_tmp_dir
+
+- name: Create temporary directory for extracting PBS client .deb
+  ansible.builtin.tempfile:
+    state: directory
+    suffix: pbc_deb_extract
+  register: pbc_extract_dir
+
+- name: Download proxmox-backup-client .deb
+  ansible.builtin.get_url:
+    url: "{{ pbc_client_deb_url }}"
+    dest: "{{ pbc_tmp_dir.path }}/{{ pbc_client_deb_filename }}"
+    mode: "0644"
+
+- name: Extract PBS client .deb to extraction directory
+  ansible.builtin.command:
+    cmd: "dpkg -x {{ pbc_tmp_dir.path }}/{{ pbc_client_deb_filename }} {{ pbc_extract_dir.path }}"
+  args:
+    creates: "{{ pbc_extract_dir.path }}/usr/bin"
+
+- name: Copy extracted PBS client binaries to {{ pbc_bin_dir }}
+  ansible.builtin.shell:
+    cmd: "cp {{ pbc_extract_dir.path }}/usr/bin/* {{ pbc_bin_dir }}/"
+  args:
+    removes: "{{ pbc_extract_dir.path }}/usr/bin"
+
+# Install pbc wrapper scripts
 - name: Clone pbc-scripts from repo
   ansible.builtin.git:
     repo: "{{ pbc_repo }}"

@@ -2,11 +2,9 @@
 # Install proxmox-backup-client automatically?
 pbc_install_client: true
 
-# deb822 repo config
-pbc_client_suite: bookworm
-pbc_keyring_url: "https://enterprise.proxmox.com/debian/proxmox-archive-keyring-trixie.gpg"
-pbc_keyring_path: /usr/share/keyrings/proxmox-archive-keyring.gpg
-pbc_client_apt_sources_file: /etc/apt/sources.list.d/pbs-client.sources
+pbc_client_suite: trixie
+pbc_client_url_base: "http://download.proxmox.com/debian/pbs-client/dists"
+pbc_client_version: "4.0.11-1"
 
 # Target user on the host
 pbc_user: fletcher
