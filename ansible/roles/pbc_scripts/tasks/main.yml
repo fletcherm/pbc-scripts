@@ -12,11 +12,11 @@
 
 # Install proxmox-backup-client
 - name: Set proxmox-backup-client version for architecture
-  set_fact:
+  ansible.builtin.set_fact:
     pbc_client_selected_version: "{{ pbc_client_version_arm if pbc_client_is_arm else pbc_client_version }}"
 
 - name: Set proxmox-backup-client .deb file name and download URL for the selected architecture
-  set_fact:
+  ansible.builtin.set_fact:
     pbc_client_deb_filename: >-
       {{
         'proxmox-backup-client-static_' ~ pbc_client_selected_version ~ '_arm64.deb'
@@ -67,6 +67,7 @@
     dest: "{{ pbc_src_dir }}"
     version: "{{ pbc_version }}"
     update: true
+  become: true
   become_user: "{{ pbc_user }}"
 
 - name: Symlink scripts into {{ pbc_bin_dir }}
