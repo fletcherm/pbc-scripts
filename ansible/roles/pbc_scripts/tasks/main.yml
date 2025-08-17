@@ -11,13 +11,24 @@
     - "{{ pbc_env_dir }}"
 
 # Install proxmox-backup-client
-- name: Set proxmox-backup-client .deb file name
+- name: Set proxmox-backup-client version for architecture
   set_fact:
-    pbc_client_deb_filename: "proxmox-backup-client-static_{{ pbc_client_version }}_amd64.deb"
+    pbc_client_selected_version: "{{ pbc_client_version_arm if pbc_client_is_arm else pbc_client_version }}"
 
-- name: Set full proxmox-backup-client .deb download URL
+- name: Set proxmox-backup-client .deb file name and download URL (Intel/ARM)
   set_fact:
-    pbc_client_deb_url: "{{ pbc_client_url_base }}/{{ pbc_client_suite }}/main/binary-amd64/{{ pbc_client_deb_filename }}"
+    pbc_client_deb_filename: >-
+      {{
+        'proxmox-backup-client-static_' ~ pbc_client_selected_version ~ '_arm64.deb'
+          if pbc_client_is_arm else
+        'proxmox-backup-client-static_' ~ pbc_client_selected_version ~ '_amd64.deb'
+      }}
+    pbc_client_deb_url: >-
+      {{
+        'https://github.com/wofferl/proxmox-backup-arm64/releases/download/' ~ pbc_client_selected_version ~ '/proxmox-backup-client-static_' ~ pbc_client_selected_version ~ '_arm64.deb'
+          if pbc_client_is_arm else
+        pbc_client_url_base ~ '/' ~ pbc_client_suite ~ '/main/binary-amd64/proxmox-backup-client-static_' ~ pbc_client_selected_version ~ '_amd64.deb'
+      }}
 
 - name: Create temporary directory for PBS client .deb
   ansible.builtin.tempfile:
