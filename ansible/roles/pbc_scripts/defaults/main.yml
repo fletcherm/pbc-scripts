@@ -4,6 +4,7 @@ pbc_client_is_arm: false # Set to true to install the ARM version, false for Int
 
 pbc_client_suite: trixie
 pbc_client_url_base: "http://download.proxmox.com/debian/pbs-client/dists"
+pbc_client_url_base_arm: "https://github.com/wofferl/proxmox-backup-arm64/releases/download/"
 pbc_client_version: "4.0.11-1"
 pbc_client_version_arm: "4.0.14-1"
 
