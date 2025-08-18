@@ -35,13 +35,13 @@
 - name: Create temporary directory for PBS client .deb
   ansible.builtin.tempfile:
     state: directory
-    suffix: pbc_deb_download
+    suffix: pbc_scripts_deb_download
   register: pbc_scripts_tmp_dir
 
 - name: Create temporary directory for extracting PBS client .deb
   ansible.builtin.tempfile:
     state: directory
-    suffix: pbc_deb_extract
+    suffix: pbc_scripts_deb_extract
   register: pbc_scripts_extract_dir
 
 - name: Download proxmox-backup-client .deb
