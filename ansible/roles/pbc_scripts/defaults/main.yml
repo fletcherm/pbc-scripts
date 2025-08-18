@@ -1,30 +1,30 @@
 ---
-pbc_install_client: true # Install proxmox-backup-client automatically?
-pbc_client_is_arm: false # Set to true to install the ARM version, false for Intel architecture
+pbc_scripts_install_client: true # Install proxmox-backup-client automatically?
+pbc_scripts_client_is_arm: false # Set to true to install the ARM version, false for Intel architecture
 
-pbc_client_suite: trixie
-pbc_client_url_base: "http://download.proxmox.com/debian/pbs-client/dists"
-pbc_client_url_base_arm: "https://github.com/wofferl/proxmox-backup-arm64/releases/download/"
-pbc_client_version: "4.0.11-1"
-pbc_client_version_arm: "4.0.14-1"
+pbc_scripts_client_suite: trixie
+pbc_scripts_client_url_base: "http://download.proxmox.com/debian/pbs-client/dists"
+pbc_scripts_client_url_base_arm: "https://github.com/wofferl/proxmox-backup-arm64/releases/download/"
+pbc_scripts_client_version: "4.0.11-1"
+pbc_scripts_client_version_arm: "4.0.14-1"
 
 # Target user on the host
-pbc_user: fletcher
-pbc_home: "/home/{{ pbc_user }}"
+pbc_scripts_user: fletcher
+pbc_scripts_home: "/home/{{ pbc_scripts_user }}"
 
 # Git source for the scripts (this repo). Set pbc_version to a git tag.
-pbc_repo: "https://github.com/fletcherm/pbc-scripts.git"
-pbc_version: "main"
+pbc_scripts_repo: "https://github.com/fletcherm/pbc-scripts.git"
+pbc_scripts_version: "main"
 
 # Where scripts land on the host
-pbc_src_dir: "{{ pbc_home }}/git/pbc-scripts"
-pbc_bin_dir: "{{ pbc_home }}/bin"
+pbc_scripts_src_dir: "{{ pbc_scripts_home }}/git/pbc-scripts"
+pbc_scripts_bin_dir: "{{ pbc_scripts_home }}/bin"
 
 # PBS env file location
-pbc_env_dir: "{{ pbc_home }}/.config/pbc-scripts"
-pbc_env_file: "{{ pbc_env_dir }}/pbc.env"
+pbc_scripts_env_dir: "{{ pbc_scripts_home }}/.config/pbc-scripts"
+pbc_scripts_env_file: "{{ pbc_scripts_env_dir }}/pbc.env"
 
 # Optionally install a zsh extension to export these envs in interactive shells
-pbc_install_zsh_extension: true
-pbc_zsh_ext_dir: "{{ pbc_home }}/.zshrc.d"
-pbc_zsh_ext_file: "{{ pbc_zsh_ext_dir }}/pbc-env.zsh"
+pbc_scripts_install_zsh_extension: true
+pbc_scripts_zsh_ext_dir: "{{ pbc_scripts_home }}/.zshrc.d"
+pbc_scripts_zsh_ext_file: "{{ pbc_scripts_zsh_ext_dir }}/pbc-env.zsh"

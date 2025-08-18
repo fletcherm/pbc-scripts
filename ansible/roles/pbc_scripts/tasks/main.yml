@@ -3,77 +3,79 @@
   ansible.builtin.file:
     path: "{{ item }}"
     state: directory
-    owner: "{{ pbc_user }}"
-    group: "{{ pbc_user }}"
+    owner: "{{ pbc_scripts_user }}"
+    group: "{{ pbc_scripts_user }}"
     mode: "0755"
   loop:
-    - "{{ pbc_bin_dir }}"
-    - "{{ pbc_env_dir }}"
+    - "{{ pbc_scripts_bin_dir }}"
+    - "{{ pbc_scripts_env_dir }}"
 
 # Install proxmox-backup-client
 - name: Set proxmox-backup-client version for architecture
   ansible.builtin.set_fact:
-    pbc_client_selected_version: "{{ pbc_client_version_arm if pbc_client_is_arm else pbc_client_version }}"
+    pbc_scripts_client_selected_version: "{{ pbc_scripts_client_version_arm if pbc_scripts_client_is_arm else pbc_scripts_client_version }}"
 
 - name: Set proxmox-backup-client .deb file name and download URL for the selected architecture
   ansible.builtin.set_fact:
-    pbc_client_deb_filename: >-
+    pbc_scripts_client_deb_filename: >-
       {{
-        'proxmox-backup-client-static_' ~ pbc_client_selected_version ~ '_arm64.deb'
-          if pbc_client_is_arm else
-        'proxmox-backup-client-static_' ~ pbc_client_selected_version ~ '_amd64.deb'
+        'proxmox-backup-client-static_' ~ pbc_scripts_client_selected_version ~ '_arm64.deb'
+          if pbc_scripts_client_is_arm else
+        'proxmox-backup-client-static_' ~ pbc_scripts_client_selected_version ~ '_amd64.deb'
       }}
-    pbc_client_deb_url: >-
+    pbc_scripts_client_deb_url: >-
       {{
-        pbc_client_url_base_arm ~ pbc_client_selected_version ~ '/proxmox-backup-client-static_' ~ pbc_client_selected_version ~ '_arm64.deb'
-          if pbc_client_is_arm else
-        pbc_client_url_base ~ '/' ~ pbc_client_suite ~ '/main/binary-amd64/proxmox-backup-client-static_' ~ pbc_client_selected_version ~ '_amd64.deb'
+        pbc_scripts_client_url_base_arm ~ pbc_scripts_client_selected_version ~ '/proxmox-backup-client-static_' ~
+        pbc_scripts_client_selected_version ~ '_arm64.deb'
+          if pbc_scripts_client_is_arm else
+        pbc_scripts_client_url_base ~ '/' ~ pbc_scripts_client_suite ~ '/main/binary-amd64/proxmox-backup-client-static_' ~
+        pbc_scripts_client_selected_version ~ '_amd64.deb'
       }}
 
 - name: Create temporary directory for PBS client .deb
   ansible.builtin.tempfile:
     state: directory
     suffix: pbc_deb_download
-  register: pbc_tmp_dir
+  register: pbc_scripts_tmp_dir
 
 - name: Create temporary directory for extracting PBS client .deb
   ansible.builtin.tempfile:
     state: directory
     suffix: pbc_deb_extract
-  register: pbc_extract_dir
+  register: pbc_scripts_extract_dir
 
 - name: Download proxmox-backup-client .deb
   ansible.builtin.get_url:
-    url: "{{ pbc_client_deb_url }}"
-    dest: "{{ pbc_tmp_dir.path }}/{{ pbc_client_deb_filename }}"
+    url: "{{ pbc_scripts_client_deb_url }}"
+    dest: "{{ pbc_scripts_tmp_dir.path }}/{{ pbc_scripts_client_deb_filename }}"
     mode: "0644"
 
 - name: Extract PBS client .deb to extraction directory
   ansible.builtin.command:
-    cmd: "dpkg -x {{ pbc_tmp_dir.path }}/{{ pbc_client_deb_filename }} {{ pbc_extract_dir.path }}"
+    cmd: "dpkg -x {{ pbc_scripts_tmp_dir.path }}/{{ pbc_scripts_client_deb_filename }} {{ pbc_scripts_extract_dir.path }}"
   args:
-    creates: "{{ pbc_extract_dir.path }}/usr/bin"
+    creates: "{{ pbc_scripts_extract_dir.path }}/usr/bin"
 
 - name: Copy extracted PBS client binaries to {{ pbc_bin_dir }}
   ansible.builtin.shell:
-    cmd: "cp {{ pbc_extract_dir.path }}/usr/bin/* {{ pbc_bin_dir }}/"
+    cmd: "cp {{ pbc_scripts_extract_dir.path }}/usr/bin/* {{ pbc_scripts_bin_dir }}/"
   args:
-    removes: "{{ pbc_extract_dir.path }}/usr/bin"
+    removes: "{{ pbc_scripts_extract_dir.path }}/usr/bin"
 
 # Install pbc wrapper scripts
 - name: Clone pbc-scripts from repo
   ansible.builtin.git:
-    repo: "{{ pbc_repo }}"
-    dest: "{{ pbc_src_dir }}"
-    version: "{{ pbc_version }}"
+    repo: "{{ pbc_scripts_repo }}"
+    dest: "{{ pbc_scripts_src_dir }}"
+    version: "{{ pbc_scripts_version }}"
     update: true
   become: true
-  become_user: "{{ pbc_user }}"
+  become_user: "{{ pbc_scripts_user }}"
 
 - name: Symlink scripts into {{ pbc_bin_dir }}
   ansible.builtin.file:
-    src: "{{ pbc_src_dir }}/scripts/{{ item }}"
-    dest: "{{ pbc_bin_dir }}/{{ item }}"
+    src: "{{ pbc_scripts_src_dir }}/scripts/{{ item }}"
+    dest: "{{ pbc_scripts_bin_dir }}/{{ item }}"
     state: link
   loop:
     - "backup-to-pbs.sh"
@@ -83,37 +85,37 @@
 
 - name: Check if Proxmox Backup Client environment file exists
   ansible.builtin.stat:
-    path: "{{ pbc_env_file }}"
-  register: pbc_env_file_stat
+    path: "{{ pbc_scripts_env_file }}"
+  register: pbc_scripts_env_file_stat
 
 - name: Write Proxmox Backup Client environment file
   ansible.builtin.template:
     src: "pbc.env.j2"
-    dest: "{{ pbc_env_file }}"
-    owner: "{{ pbc_user }}"
-    group: "{{ pbc_user }}"
+    dest: "{{ pbc_scripts_env_file }}"
+    owner: "{{ pbc_scripts_user }}"
+    group: "{{ pbc_scripts_user }}"
     mode: "0600"
-  when: not pbc_env_file_stat.stat.exists
+  when: not pbc_scripts_env_file_stat.stat.exists
 
 - name: Ensure zsh extension dir (optional)
-  when: pbc_install_zsh_extension
+  when: pbc_scripts_install_zsh_extension
   ansible.builtin.file:
-    path: "{{ pbc_zsh_ext_dir }}"
+    path: "{{ pbc_scripts_zsh_ext_dir }}"
     state: directory
-    owner: "{{ pbc_user }}"
-    group: "{{ pbc_user }}"
+    owner: "{{ pbc_scripts_user }}"
+    group: "{{ pbc_scripts_user }}"
     mode: "0755"
 
 - name: Write zsh extension to export env (optional)
-  when: pbc_install_zsh_extension
+  when: pbc_scripts_install_zsh_extension
   ansible.builtin.template:
     src: "pbc-env.zsh.j2"
-    dest: "{{ pbc_zsh_ext_file }}"
-    owner: "{{ pbc_user }}"
-    group: "{{ pbc_user }}"
+    dest: "{{ pbc_scripts_zsh_ext_file }}"
+    owner: "{{ pbc_scripts_user }}"
+    group: "{{ pbc_scripts_user }}"
     mode: "0640"
 
 - name: Reminder to edit PBS_PASSWORD in the config file
   ansible.builtin.debug:
     msg: |
-      Please edit the PBS_PASSWORD variable in {{ pbc_env_file }} to set your Proxmox Backup Server password.
+      Please edit the PBS_PASSWORD variable in {{ pbc_scripts_env_file }} to set your Proxmox Backup Server password.
