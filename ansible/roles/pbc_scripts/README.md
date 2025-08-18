@@ -6,6 +6,8 @@ Ansible role to install [fletcherm Proxmox Backup Client scripts](https://github
 Role Variables
 --------------
 
+WARNING: The below was AI generated; will human-ify later.
+
 All role variables use the `pbc_scripts_` prefix. Key variables include (see `defaults/main.yml` for full list):
 
 - `pbc_scripts_install_client`: Install proxmox-backup-client automatically? (default: true)
@@ -29,11 +31,6 @@ All role variables use the `pbc_scripts_` prefix. Key variables include (see `de
 
 You must also set PBS repository environment variables in your environment file as needed.
 
-Dependencies
-------------
-
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
-
 Example Playbook
 ----------------
 
@@ -45,17 +42,6 @@ Including an example of how to use your role (for instance, with variables passe
            vars:
              # ...override variables as needed
 
-Note: If you see a syntax-check error like:
-
-    the role 'pbc_scripts' was not found in ...
-
-This usually means Ansible cannot find your local role because roles_path is not set correctly. Fix it by:
-- Running ansible-lint or ansible-playbook from the ansible/ directory (so roles/ is in the right location)
-- Or, setting ANSIBLE_ROLES_PATH to include the parent directory of this role, e.g.:
-
-    export ANSIBLE_ROLES_PATH="$(pwd)/roles"
-
-See https://docs.ansible.com/ansible/latest/user_guide/playbooks_reuse_roles.html#role-search-path for details.
 
 License
 -------
