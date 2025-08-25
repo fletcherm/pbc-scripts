@@ -8,8 +8,9 @@ pbc_scripts_client_url_base_arm: "https://github.com/wofferl/proxmox-backup-arm6
 pbc_scripts_client_version: "4.0.11-1"
 pbc_scripts_client_version_arm: "4.0.14-1"
 
-# Target user on the host
+# Target user and group on the host
 pbc_scripts_user: fletcher
+pbc_scripts_group: fletcher
 pbc_scripts_home: "/home/{{ pbc_scripts_user }}"
 
 # Git source for the scripts (this repo). Set pbc_version to a git tag.

@@ -56,7 +56,15 @@
   args:
     creates: "{{ pbc_scripts_extract_dir.path }}/usr/bin"
 
-- name: Copy extracted PBS client binaries to {{ pbc_bin_dir }}
+- name: Ensure extracted PBS client binaries are owned by [{{ pbc_scripts_user }}]
+  ansible.builtin.file:
+    path: "{{ pbc_scripts_extract_dir.path }}/usr/bin"
+    owner: "{{ pbc_scripts_user }}"
+    group: "{{ pbc_scripts_group }}"
+    recurse: yes
+    state: directory
+
+- name: Copy extracted PBS client binaries to [{{ pbc_bin_dir }}]
   ansible.builtin.shell:
     cmd: "cp {{ pbc_scripts_extract_dir.path }}/usr/bin/* {{ pbc_scripts_bin_dir }}/"
   args:
