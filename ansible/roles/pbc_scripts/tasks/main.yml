@@ -56,19 +56,21 @@
   args:
     creates: "{{ pbc_scripts_extract_dir.path }}/usr/bin"
 
-- name: Ensure extracted PBS client binaries are owned by [{{ pbc_scripts_user }}]
-  ansible.builtin.file:
-    path: "{{ pbc_scripts_extract_dir.path }}/usr/bin"
-    owner: "{{ pbc_scripts_user }}"
-    group: "{{ pbc_scripts_group }}"
-    recurse: yes
-    state: directory
+- name: Find extracted PBS client binaries
+  ansible.builtin.find:
+    paths: "{{ pbc_scripts_extract_dir.path }}/usr/bin"
+    file_type: file
+  register: pbc_extracted_binaries
 
 - name: Copy extracted PBS client binaries to [{{ pbc_bin_dir }}]
-  ansible.builtin.shell:
-    cmd: "cp {{ pbc_scripts_extract_dir.path }}/usr/bin/* {{ pbc_scripts_bin_dir }}/"
-  args:
-    removes: "{{ pbc_scripts_extract_dir.path }}/usr/bin"
+  ansible.builtin.copy:
+    src: "{{ item.path }}"
+    dest: "{{ pbc_scripts_bin_dir }}/{{ item.path | basename }}"
+    owner: "{{ pbc_scripts_user }}"
+    group: "{{ pbc_scripts_group }}"
+    mode: "0755"
+    remote_src: yes
+  loop: "{{ pbc_extracted_binaries.files }}"
 
 # Install pbc wrapper scripts
 - name: Clone pbc-scripts from repo
