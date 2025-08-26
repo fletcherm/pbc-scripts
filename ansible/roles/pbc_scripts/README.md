@@ -18,6 +18,7 @@ All role variables use the `pbc_scripts_` prefix. Key variables include (see `de
 - `pbc_scripts_client_version`: PBS client version for AMD64
 - `pbc_scripts_client_version_arm`: PBS client version for ARM64
 - `pbc_scripts_user`: Target user for installation (default: fletcher)
+- `pbc_scripts_group`: Target group for installation (default: fletcher)
 - `pbc_scripts_home`: Home directory for user
 - `pbc_scripts_repo`: Git repo for scripts
 - `pbc_scripts_version`: Git tag/branch to check out
