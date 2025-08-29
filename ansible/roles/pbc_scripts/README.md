@@ -32,6 +32,20 @@ All role variables use the `pbc_scripts_` prefix. Key variables include (see `de
 
 You must also set PBS repository environment variables in your environment file as needed.
 
+Idempotency & Caching
+---------------------
+
+- Bold behavior: Skips re-download/extract/copy when the installed client matches the desired version.
+- Installed version/arch check: runs `{{ pbc_scripts_bin_dir }}/proxmox-backup-client version` and `file -b` to detect architecture; triggers reinstall if version differs or arch mismatches the selected target (arm64 vs amd64).
+- Cache: downloads `.deb` to `{{ pbc_scripts_home }}/.cache/pbc-scripts/` and extracts under `extract/<version>_<arch>/`.
+- Directory modes: creates `{{ pbc_scripts_bin_dir }}` with `0700`, and `{{ pbc_scripts_env_dir }}` with `0755`.
+
+Additional Variables
+--------------------
+
+- `pbc_scripts_force_install`: force re-install even if the same version appears installed (default: false).
+- `pbc_scripts_client_deb_checksum`: optional checksum for the downloaded deb (e.g., `sha256:<digest>`). If set, avoids re-downloads when content matches.
+
 Example Playbook
 ----------------
 

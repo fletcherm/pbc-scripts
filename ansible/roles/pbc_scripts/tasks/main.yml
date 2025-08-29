@@ -1,14 +1,14 @@
 ---
 - name: Ensure base directories exist
   ansible.builtin.file:
-    path: "{{ item }}"
+    path: "{{ item.path }}"
     state: directory
     owner: "{{ pbc_scripts_user }}"
     group: "{{ pbc_scripts_user }}"
-    mode: "0755"
+    mode: "{{ item.mode }}"
   loop:
-    - "{{ pbc_scripts_bin_dir }}"
-    - "{{ pbc_scripts_env_dir }}"
+    - { path: "{{ pbc_scripts_bin_dir }}", mode: "0700" }
+    - { path: "{{ pbc_scripts_env_dir }}", mode: "0700" }
 
 # Install proxmox-backup-client
 - name: Set proxmox-backup-client version for architecture
@@ -31,38 +31,79 @@
         pbc_scripts_client_url_base ~ '/' ~ pbc_scripts_client_suite ~ '/main/binary-amd64/proxmox-backup-client-static_' ~
         pbc_scripts_client_selected_version ~ '_amd64.deb'
       }}
+    pbc_scripts_cache_dir: "{{ pbc_scripts_home }}/.cache/pbc-scripts"
 
-- name: Create temporary directory for PBS client .deb
-  ansible.builtin.tempfile:
-    state: directory
-    suffix: pbc_scripts_deb_download
-  register: pbc_scripts_tmp_dir
+- name: Set proxmox-backup-client cached paths
+  ansible.builtin.set_fact:
+    pbc_scripts_deb_path: "{{ pbc_scripts_cache_dir }}/{{ pbc_scripts_client_deb_filename }}"
+    pbc_scripts_extract_dir: >-
+      {{ pbc_scripts_cache_dir ~ '/extract/' ~ pbc_scripts_client_selected_version ~ '_' ~ ( 'arm64' if pbc_scripts_client_is_arm else 'amd64') }}
 
-- name: Create temporary directory for extracting PBS client .deb
-  ansible.builtin.tempfile:
+- name: Check current proxmox-backup-client version (if installed)
+  ansible.builtin.command: "{{ pbc_scripts_bin_dir }}/proxmox-backup-client version"
+  register: pbc_scripts_client_version_check
+  changed_when: false
+  failed_when: false
+
+- name: Parse installed proxmox-backup-client version
+  ansible.builtin.set_fact:
+    pbc_scripts_existing_version: "{{ (pbc_scripts_client_version_check.stdout | regex_search('([0-9]+[.][0-9]+[.][0-9]+(?:-[0-9]+)?)')) | default('') }}"
+
+- name: Detect installed proxmox-backup-client architecture
+  ansible.builtin.command: "file -b {{ pbc_scripts_bin_dir }}/proxmox-backup-client"
+  register: pbc_scripts_client_arch_check
+  changed_when: false
+  failed_when: false
+
+- name: Parse installed proxmox-backup-client architecture
+  ansible.builtin.set_fact:
+    pbc_scripts_existing_arch: >-
+      {{ 'arm64' if (pbc_scripts_client_arch_check.stdout is defined and 'aarch64' in pbc_scripts_client_arch_check.stdout)
+         else ('amd64' if (pbc_scripts_client_arch_check.stdout is defined and 'x86-64' in pbc_scripts_client_arch_check.stdout) else '') }}
+
+- name: Set desired proxmox-backup-client architecture
+  ansible.builtin.set_fact:
+    pbc_scripts_desired_arch: "{{ 'arm64' if pbc_scripts_client_is_arm else 'amd64' }}"
+
+- name: Determine if architecture mismatch requires reinstall
+  ansible.builtin.set_fact:
+    pbc_scripts_arch_mismatch: "{{ (pbc_scripts_existing_arch | default('')) != '' and (pbc_scripts_existing_arch != pbc_scripts_desired_arch) }}"
+
+- name: Ensure cache directories exist
+  ansible.builtin.file:
+    path: "{{ item }}"
     state: directory
-    suffix: pbc_scripts_deb_extract
-  register: pbc_scripts_extract_dir
+    owner: "{{ pbc_scripts_user }}"
+    group: "{{ pbc_scripts_user }}"
+    mode: "0700"
+  loop:
+    - "{{ pbc_scripts_cache_dir }}"
+    - "{{ pbc_scripts_extract_dir }}"
+  when: pbc_scripts_force_install | bool or (pbc_scripts_existing_version | default('')) != pbc_scripts_client_selected_version or (pbc_scripts_arch_mismatch | default(false))
 
 - name: Download proxmox-backup-client .deb
   ansible.builtin.get_url:
     url: "{{ pbc_scripts_client_deb_url }}"
-    dest: "{{ pbc_scripts_tmp_dir.path }}/{{ pbc_scripts_client_deb_filename }}"
+    dest: "{{ pbc_scripts_deb_path }}"
     mode: "0644"
+    checksum: "{{ pbc_scripts_client_deb_checksum | default(omit) }}"
+  when: pbc_scripts_force_install | bool or (pbc_scripts_existing_version | default('')) != pbc_scripts_client_selected_version or (pbc_scripts_arch_mismatch | default(false))
 
 - name: Extract PBS client .deb to extraction directory
   ansible.builtin.command:
-    cmd: "dpkg -x {{ pbc_scripts_tmp_dir.path }}/{{ pbc_scripts_client_deb_filename }} {{ pbc_scripts_extract_dir.path }}"
+    cmd: "dpkg -x {{ pbc_scripts_deb_path }} {{ pbc_scripts_extract_dir }}"
   args:
-    creates: "{{ pbc_scripts_extract_dir.path }}/usr/bin"
+    creates: "{{ pbc_scripts_extract_dir }}/usr/bin/proxmox-backup-client"
+  when: pbc_scripts_force_install | bool or (pbc_scripts_existing_version | default('')) != pbc_scripts_client_selected_version or (pbc_scripts_arch_mismatch | default(false))
 
 - name: Find extracted PBS client binaries
   ansible.builtin.find:
-    paths: "{{ pbc_scripts_extract_dir.path }}/usr/bin"
+    paths: "{{ pbc_scripts_extract_dir }}/usr/bin"
     file_type: file
   register: pbc_extracted_binaries
+  when: pbc_scripts_force_install | bool or (pbc_scripts_existing_version | default('')) != pbc_scripts_client_selected_version or (pbc_scripts_arch_mismatch | default(false))
 
-- name: Copy extracted PBS client binaries to [{{ pbc_bin_dir }}]
+- name: Copy extracted PBS client binaries to [{{ pbc_scripts_bin_dir }}]
   ansible.builtin.copy:
     src: "{{ item.path }}"
     dest: "{{ pbc_scripts_bin_dir }}/{{ item.path | basename }}"
@@ -70,7 +111,8 @@
     group: "{{ pbc_scripts_group }}"
     mode: "0755"
     remote_src: yes
-  loop: "{{ pbc_extracted_binaries.files }}"
+  loop: "{{ pbc_extracted_binaries.files | default([]) }}"
+  when: pbc_scripts_force_install | bool or (pbc_scripts_existing_version | default('')) != pbc_scripts_client_selected_version or (pbc_scripts_arch_mismatch | default(false))
 
 # Install pbc wrapper scripts
 - name: Clone pbc-scripts from repo
