@@ -8,4 +8,6 @@ if [ $# -eq 0 ]; then
   exit 1
 fi
 
-"$PBC" restore --ns "$PBS_NAMESPACE" $1 "$PBS_BACKUP_NAME".pxar "$PBS_BACKUP_DIR"
+for index in "${!PBS_BACKUP_ARCHIVE_NAMES[@]}"; do
+  "$PBC" restore --ns "$PBS_NAMESPACE" "$1" "${PBS_BACKUP_ARCHIVE_NAMES[$index]}" "${PBS_BACKUP_ARCHIVE_DIRS[$index]}"
+done

@@ -32,6 +32,3 @@ pbc_scripts_zsh_ext_file: "{{ pbc_scripts_zsh_ext_dir }}/pbc-env.zsh"
 
 # Optional: force reinstall even if the same version is already installed
 pbc_scripts_force_install: false
-
-# Optional: checksum for the downloaded deb, e.g. "sha256:<digest>"
-# pbc_scripts_client_deb_checksum: ""
