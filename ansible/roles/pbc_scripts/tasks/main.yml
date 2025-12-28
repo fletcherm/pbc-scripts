@@ -74,7 +74,7 @@
     path: "{{ item }}"
     state: directory
     owner: "{{ pbc_scripts_user }}"
-    group: "{{ pbc_scripts_user }}"
+    group: "{{ pbc_scripts_group }}"
     mode: "0700"
   loop:
     - "{{ pbc_scripts_cache_dir }}"
@@ -85,6 +85,8 @@
   ansible.builtin.get_url:
     url: "{{ pbc_scripts_client_deb_url }}"
     dest: "{{ pbc_scripts_deb_path }}"
+    owner: "{{ pbc_scripts_user }}"
+    group: "{{ pbc_scripts_group }}"
     mode: "0644"
     checksum: "{{ pbc_scripts_client_deb_checksum | default(omit) }}"
   when: pbc_scripts_force_install | bool or (pbc_scripts_existing_version | default('')) != pbc_scripts_client_selected_version or (pbc_scripts_arch_mismatch | default(false))
@@ -94,6 +96,15 @@
     cmd: "dpkg -x {{ pbc_scripts_deb_path }} {{ pbc_scripts_extract_dir }}"
   args:
     creates: "{{ pbc_scripts_extract_dir }}/usr/bin/proxmox-backup-client"
+  when: pbc_scripts_force_install | bool or (pbc_scripts_existing_version | default('')) != pbc_scripts_client_selected_version or (pbc_scripts_arch_mismatch | default(false))
+
+- name: Ensure extracted PBS client files are owned by {{ pbc_scripts_user }}
+  ansible.builtin.file:
+    path: "{{ pbc_scripts_extract_dir }}"
+    state: directory
+    owner: "{{ pbc_scripts_user }}"
+    group: "{{ pbc_scripts_group }}"
+    recurse: true
   when: pbc_scripts_force_install | bool or (pbc_scripts_existing_version | default('')) != pbc_scripts_client_selected_version or (pbc_scripts_arch_mismatch | default(false))
 
 - name: Find extracted PBS client binaries
