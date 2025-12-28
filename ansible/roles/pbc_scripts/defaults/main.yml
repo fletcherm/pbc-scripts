@@ -5,8 +5,8 @@ pbc_scripts_client_is_arm: false # Set to true to install the ARM version, false
 pbc_scripts_client_suite: trixie
 pbc_scripts_client_url_base: "http://download.proxmox.com/debian/pbs-client/dists"
 pbc_scripts_client_url_base_arm: "https://github.com/wofferl/proxmox-backup-arm64/releases/download/"
-pbc_scripts_client_version: "4.0.11-1"
-pbc_scripts_client_version_arm: "4.0.14-1"
+pbc_scripts_client_version: "4.0.16-1"
+pbc_scripts_client_version_arm: "4.1.0-1"
 
 # Target user and group on the host
 pbc_scripts_user: fletcher
