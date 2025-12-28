@@ -21,6 +21,9 @@ pbc_scripts_version: "main"
 pbc_scripts_src_dir: "{{ pbc_scripts_home }}/git/pbc-scripts"
 pbc_scripts_bin_dir: "{{ pbc_scripts_home }}/bin"
 
+# PBS env file values (set these in your playbook)
+pbc_scripts_backup_dirs:
+
 # PBS env file location
 pbc_scripts_env_dir: "{{ pbc_scripts_home }}/.config/pbc-scripts"
 pbc_scripts_env_file: "{{ pbc_scripts_env_dir }}/pbc.env"

@@ -6,7 +6,7 @@ Ansible role to install [fletcherm Proxmox Backup Client scripts](https://github
 Role Variables
 --------------
 
-WARNING: The below was AI generated; will human-ify later.
+WARNING: The below was AI generated; will human-ify later (maybe, lol).
 
 All role variables use the `pbc_scripts_` prefix. Key variables include (see `defaults/main.yml` for full list):
 
@@ -24,6 +24,7 @@ All role variables use the `pbc_scripts_` prefix. Key variables include (see `de
 - `pbc_scripts_version`: Git tag/branch to check out
 - `pbc_scripts_src_dir`: Where scripts clone to
 - `pbc_scripts_bin_dir`: Where scripts are symlinked
+- `pbc_scripts_backup_dirs`: Colon-separated list of backup directories for `PBS_BACKUP_DIRS`
 - `pbc_scripts_env_dir`: Directory for PBS environment file
 - `pbc_scripts_env_file`: PBS environment file path
 - `pbc_scripts_install_zsh_extension`: Whether to install Zsh extension (default: true)

@@ -1,4 +1,10 @@
 ---
+- name: Require backup directories to be set
+  ansible.builtin.assert:
+    that:
+      - (pbc_scripts_backup_dirs | default('')) | length > 0 or (pbc_scripts_backup_dir | default('')) | length > 0
+    fail_msg: "Set pbc_scripts_backup_dirs (preferred) or pbc_scripts_backup_dir before running this role."
+
 - name: Ensure base directories exist
   ansible.builtin.file:
     path: "{{ item.path }}"
@@ -135,7 +141,7 @@
   become: true
   become_user: "{{ pbc_scripts_user }}"
 
-- name: Symlink scripts into {{ pbc_bin_dir }}
+- name: Symlink scripts into {{ pbc_scripts_bin_dir }}
   ansible.builtin.file:
     src: "{{ pbc_scripts_src_dir }}/scripts/{{ item }}"
     dest: "{{ pbc_scripts_bin_dir }}/{{ item }}"
